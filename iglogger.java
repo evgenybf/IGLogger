@@ -12,6 +12,7 @@ import java.util.Set;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.location.Address;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -65,7 +66,7 @@ public class iglogger {
 	// In logcat, set your filter for "tag:!!!" to view the messages from this class
 	private static String LOG_TAG = "!!! IGLogger";
 	private static String TRACE_TAG = "!!! IGTraceLogger";
-	private static String VERSION = "IGLogger 2.55 - 04/24/2013";
+	private static String VERSION = "IGLogger 2.57 - 05/19/2014";
 	
 	 /* Default Case
 	  *  - Use this call to just print you where here in a method
@@ -160,6 +161,26 @@ public class iglogger {
 	 static public int d(String t, char m) {
 	     return android.util.Log.wtf(t, notEmpty(Character.toString(m)));
 	 }	 
+
+	 /* CharSequence Case
+	  *   
+	  * 
+	  * *** SMALI CODE TO ADD ***
+	  * invoke-static {v0}, Liglogger;->d(Ljava/lang/CharSequence;)I 
+	  * 
+	  */ 
+	 static public int d(CharSequence m) {
+		 Throwable t = new Throwable();
+		 String logtag = LOG_TAG + ": " + t.getStackTrace()[1].getClassName();	
+		 final StringBuilder sb = new StringBuilder(m.length());
+		 sb.append(m);
+	     return android.util.Log.wtf(logtag, notEmpty(sb.toString()));
+	 }		 
+	 static public int d(String t, CharSequence m) {
+		 final StringBuilder sb = new StringBuilder(m.length());
+		 sb.append(m);
+	     return android.util.Log.wtf(t, notEmpty(sb.toString()));
+	 }
 	 
 	 /* Int Case
 	  *   Smali Type Value: 0x04
@@ -347,7 +368,8 @@ public class iglogger {
 	     return 1;
 	 }	 
 
-	 static public int d(String t, Object m) {
+
+	 static public int d(String t, Object[] m) {
 		 try{
 			 android.util.Log.wtf(t, m.toString());
 		 } catch (Exception e) {
@@ -355,7 +377,6 @@ public class iglogger {
 		 }
 	     return 1;
 	 }
-	 
 	
 	 /* Byte Array Case
 	  *   - will print the byte array as a hex string
@@ -402,6 +423,33 @@ public class iglogger {
 	     return 1;
 	 }	 
 
+	 
+	 /* Address (android.location)
+	  *  
+	  * *** SMALI CODE TO ADD ***
+	  * invoke-static {v0}, Liglogger;->d(Landriod/location/address;)I
+	  * 
+	  */
+	 static public int d(Address m) {
+		 Throwable t = new Throwable();
+		 String logtag = LOG_TAG + ": " + t.getStackTrace()[1].getClassName();	
+		 
+		 try{
+			 android.util.Log.wtf(logtag, m.toString());
+		 } catch (Exception e) {
+			 android.util.Log.wtf(logtag, "Error, could not convert Address to string");
+		 }
+	     return 1;
+	 }
+
+	 static public int d(String t, Address m) {
+		 try{
+			 android.util.Log.wtf(t, m.toString());
+		 } catch (Exception e) {
+			 android.util.Log.wtf(t, "Error, could not convert Address to string");
+		 }
+	     return 1;
+	 }	 
 	 /* URLConnection Case
 	  *  
 	  * *** SMALI CODE TO ADD ***
@@ -664,6 +712,19 @@ public class iglogger {
 		 logtag = logtag + " Line " + t.getStackTrace()[1].getLineNumber();	
 		 return android.util.Log.wtf(logtag, notEmpty(m));
 	 }	
+	 static public int trace_format_string(String s, Object[] m) {
+		 try{
+			 s = String.format(s, m);
+			 Throwable t = new Throwable();
+			 String logtag = TRACE_TAG + " Format String: " + t.getStackTrace()[1].getClassName();		  
+			 logtag = logtag + "->" + t.getStackTrace()[1].getMethodName();
+			 logtag = logtag + " Line " + t.getStackTrace()[1].getLineNumber();	
+			 return android.util.Log.wtf(logtag, notEmpty(s));
+		 } catch (Exception e) {
+			 android.util.Log.wtf(s, "Error, could not convert to format string");
+		 }
+	     return 1;
+	 }
 
 	 /* Trace Stuff for SQL
 	  * 

@@ -65,7 +65,12 @@ If logging looks strange or missing from Logcat in DDMS/Monitor, try "adb logcat
 
 Version History
 ===============
+v2.57
 
+ + Added android.location.address and java.lang.CharSequence logging
+ + Smali Decompiled with APKTool 2.0 Beta
+ + Forked to my repo since no longer at Intrepidus. Much love to the IG peeps.
+ 
 v2.55 
  
  + Added printing of the line number to all trace functions. The new APKSmash script should insert line numbers, making this output more useful.
